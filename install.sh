@@ -59,8 +59,6 @@ kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | kubectl apply -f-
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 if command -v wget &> /dev/null
 then
      echo "INSTALLING CARVEL USING wget"
