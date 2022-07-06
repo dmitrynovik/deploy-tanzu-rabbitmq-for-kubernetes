@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-set -eo pipefail
+set -e
 
 # Parameters with default values (can override):
 tanzurmqversion=1.3.0
@@ -20,8 +20,9 @@ while [ $# -gt 0 ]; do
 
    if [[ $1 == *"--"* ]]; then
         param="${1/--/}"
-        if [ $param -eq "oc" ] then
-          kubectl=oc
+        if [ $param -eq "oc" ] 
+        then
+          $kubectl=oc
         else
           declare $param="$2"
         fi
