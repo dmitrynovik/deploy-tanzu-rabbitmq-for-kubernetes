@@ -13,13 +13,18 @@ requesttimeout=100s
 vmwareuser=""
 vmwarepassword=""
 certmanagervsersion=1.8.0
+kubectl=kubectl
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
 
    if [[ $1 == *"--"* ]]; then
         param="${1/--/}"
-        declare $param="$2"
+        if [ $param -eq "oc" ] then
+          kubectl=oc
+        else
+          declare $param="$2"
+        fi
         # echo $1 $2 // Optional to see the parameter:value result
    fi
 
@@ -48,16 +53,16 @@ echo "requesttimeout: $requesttimeout"
 echo "certmanagervsersion: $certmanagervsersion"
 
 echo "CREATE NAMESPACE $namespace if does not exist..."
-kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f-
+$kubectl create namespace $namespace --dry-run=client -o yaml | $kubectl apply -f-
 
 echo "CREATE SERVICEACCOUNT $serviceaccount if does not exist..."
-kubectl create serviceaccount $serviceaccount -n $namespace --dry-run=client -o yaml | kubectl apply -f-
+$kubectl create serviceaccount $serviceaccount -n $namespace --dry-run=client -o yaml | $kubectl apply -f-
 
 echo "CREATING CLUSTER ROLE"
-kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
+$kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
 
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
-kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | kubectl apply -f-
+$kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
 if command -v wget &> /dev/null
 then
@@ -73,20 +78,20 @@ else
 fi
 
 echo "INSTALLING KAPP-CONTROLLER"
-kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
+$kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 
 echo "INSTALLING SECRETGEN-CONTROLLER"
-kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
+$kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 
 echo "INSTALLING CERT-MANAGER" # @Param: version
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
+$kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
 
 echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
 export RMQ_docker__username="$vmwareuser"
 export RMQ_docker__password="$vmwarepassword"
 export RMQ_docker__server="registry.tanzu.vmware.com"
 export RMQ_rabbitmq__namespace="$namespace"
-ytt -f secret.yml --data-values-env RMQ | kubectl apply -f-
+ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
 
 echo "DEPLOYING REPOSITORY..."
 export RMQ_rabbitmq__image="registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:$tanzurmqversion"
@@ -111,9 +116,9 @@ chmod +x quickstart.sh
 cd ../../
 
 echo "INSTALLING CLUSTERS MONITOR..."
-kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
+$kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
 echo "INSTALLING OPERATORS MONITOR..."
-kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
+$kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
 
 echo "CREATE RABBITMQ CLUSTER"
 ytt -f cluster.yml --data-value-yaml rabbitmq.replicas=$replicas | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
