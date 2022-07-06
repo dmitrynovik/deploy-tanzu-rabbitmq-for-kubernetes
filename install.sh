@@ -72,8 +72,6 @@ else
      exit 1
 fi
 
-exit 1
-
 echo "INSTALLING KAPP-CONTROLLER"
 kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 
