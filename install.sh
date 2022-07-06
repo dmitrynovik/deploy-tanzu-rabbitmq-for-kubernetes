@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-set -e
+set -eo pipefail
 
 # Parameters with default values (can override):
 tanzurmqversion=1.3.0
