@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-set -e
+set -eo pipefail
 
 # Parameters with default values (can override):
 tanzurmqversion=1.3.0
@@ -59,6 +59,23 @@ kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | kubectl apply -f-
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+if command -v wget &> /dev/null
+then
+     echo "INSTALLING CARVEL USING wget"
+     wget -O- https://carvel.dev/install.sh | bash
+elif command -v curl &> /dev/null
+then
+     echo "INSTALLING CARVEL USING curl"
+     curl -L https://carvel.dev/install.sh | bash
+else
+     echo "Error: neither wget nor curl detected"
+     exit 1
+fi
+
+exit 1
+
 echo "INSTALLING KAPP-CONTROLLER"
 kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 
@@ -67,9 +84,6 @@ kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/rel
 
 echo "INSTALLING CERT-MANAGER" # @Param: version
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
-
-echo "INSTALLING CARVEL"
-wget -O- https://carvel.dev/install.sh | bash
 
 echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
 export RMQ_docker__username="$vmwareuser"
