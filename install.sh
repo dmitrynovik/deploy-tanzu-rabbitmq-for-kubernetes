@@ -19,13 +19,8 @@ kubectl=kubectl
 while [ $# -gt 0 ]; do
 
    if [[ $1 == *"--"* ]]; then
-        param="${1/--/}"
-        if [ $param -eq "oc" ] 
-        then
-          $kubectl=oc
-        else
-          declare $param="$2"
-        fi
+        echo "param: $param"
+        declare $param="$2"
         # echo $1 $2 // Optional to see the parameter:value result
    fi
 
@@ -52,6 +47,7 @@ echo "prometheusrepourl: $prometheusrepourl"
 echo "prometheusoperatorversion: $prometheusoperatorversion"
 echo "requesttimeout: $requesttimeout"
 echo "certmanagervsersion: $certmanagervsersion"
+echo "kubectl: $kubectl"
 
 echo "CREATE NAMESPACE $namespace if does not exist..."
 $kubectl create namespace $namespace --dry-run=client -o yaml | $kubectl apply -f-
