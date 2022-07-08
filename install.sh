@@ -107,13 +107,13 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod +x get_helm.sh
 ./get_helm.sh
 
-echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
-git clone $prometheusrepourl
-cd cluster-operator/observability/
-git checkout $prometheusoperatorversion
-chmod +x quickstart.sh
-./quickstart.sh
-cd ../../
+# echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
+# git clone $prometheusrepourl
+# cd cluster-operator/observability/
+# git checkout $prometheusoperatorversion
+# chmod +x quickstart.sh
+# ./quickstart.sh
+# cd ../../
 
 echo "INSTALLING CLUSTERS MONITOR..."
 $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
