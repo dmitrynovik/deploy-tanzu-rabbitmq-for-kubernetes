@@ -8,4 +8,11 @@ spec:
   replicas: #@ data.values.rabbitmq.replicas
   imagePullSecrets:
   - name: tanzu-rabbitmq-registry-creds
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            containers: []
+            securityContext: {}
 
