@@ -62,18 +62,20 @@ $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeou
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
-if command -v wget &> /dev/null
-then
-     echo "INSTALLING CARVEL USING wget"
-     wget -O- https://carvel.dev/install.sh | bash
-elif command -v curl &> /dev/null
-then
-     echo "INSTALLING CARVEL USING curl"
-     curl -L https://carvel.dev/install.sh | bash
-else
-     echo "Error: neither wget nor curl detected"
-     exit 1
-fi
+# if command -v wget &> /dev/null
+# then
+#      echo "INSTALLING CARVEL USING wget"
+#      wget -O- https://carvel.dev/install.sh | bash
+# elif command -v curl &> /dev/null
+# then
+#      echo "INSTALLING CARVEL USING curl"
+#      curl -L https://carvel.dev/install.sh | bash
+# else
+#      echo "Error: neither wget nor curl detected"
+#      exit 1
+# fi
+chmod +x install_carvel.sh
+./install_carvel.sh
 
 echo "INSTALLING KAPP-CONTROLLER"
 $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
