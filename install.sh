@@ -67,22 +67,25 @@ $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeou
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
-# TODO: remove
-# if command -v wget &> /dev/null
-# then
-#      echo "INSTALLING CARVEL USING wget"
-#      wget -O- https://carvel.dev/install.sh | bash
-# elif command -v curl &> /dev/null
-# then
-#      echo "INSTALLING CARVEL USING curl"
-#      curl -L https://carvel.dev/install.sh | bash
-# else
-#      echo "Error: neither wget nor curl detected"
-#      exit 1
-# fi
-chmod +x install_carvel.sh
-./install_carvel.sh
-# EOF: remove
+if command -v shasum &> /dev/null
+then
+     if command -v wget &> /dev/null
+     then
+          echo "INSTALLING CARVEL USING wget"
+          wget -O- https://carvel.dev/install.sh | bash
+     elif command -v curl &> /dev/null
+     then
+          echo "INSTALLING CARVEL USING curl"
+          curl -L https://carvel.dev/install.sh | bash
+     else
+          echo "Error: neither wget nor curl detected"
+          exit 1
+     fi
+else
+     echo "WARNING: shasum IS MISSING !"
+     chmod +x install_carvel.sh
+     ./install_carvel.sh
+fi
 
 echo "INSTALLING KAPP-CONTROLLER"
 $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
@@ -114,14 +117,19 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod +x get_helm.sh
 ./get_helm.sh
 
-# TODO: fix this
-# echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
-# git clone $prometheusrepourl
-# cd cluster-operator/observability/
-# git checkout $prometheusoperatorversion
-# chmod +x quickstart.sh
-# ./quickstart.sh
-# cd ../../
+# TODO: fix Observability for Openshift
+if [[ $openshift -eq 1 ]] 
+then
+     echo "OPENSHIFT DETECTED, PLEASE INSTALL OBSERVABILITY TOOLS MANUALLY..."
+else
+     echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
+     git clone $prometheusrepourl
+     cd cluster-operator/observability/
+     git checkout $prometheusoperatorversion
+     chmod +x quickstart.sh
+     ./quickstart.sh
+     cd ../../
+fi
 
 echo "INSTALLING CLUSTERS MONITOR..."
 $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
