@@ -50,6 +50,11 @@ echo "requesttimeout: $requesttimeout"
 echo "certmanagervsersion: $certmanagervsersion"
 echo "kubectl: $kubectl"
 
+case $kubectl in
+"oc") openshift=1 ;;
+*) openshift=0 ;;
+esac
+
 echo "CREATE NAMESPACE $namespace if does not exist..."
 $kubectl create namespace $namespace --dry-run=client -o yaml | $kubectl apply -f-
 
@@ -62,6 +67,7 @@ $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeou
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
+# TODO: remove
 # if command -v wget &> /dev/null
 # then
 #      echo "INSTALLING CARVEL USING wget"
@@ -76,6 +82,7 @@ $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install 
 # fi
 chmod +x install_carvel.sh
 ./install_carvel.sh
+# EOF: remove
 
 echo "INSTALLING KAPP-CONTROLLER"
 $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
@@ -107,6 +114,7 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod +x get_helm.sh
 ./get_helm.sh
 
+# TODO: fix this
 # echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
 # git clone $prometheusrepourl
 # cd cluster-operator/observability/
@@ -121,7 +129,7 @@ echo "INSTALLING OPERATORS MONITOR..."
 $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
 
 echo "CREATE RABBITMQ CLUSTER"
-ytt -f cluster.yml --data-value-yaml rabbitmq.replicas=$replicas | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
+ytt -f cluster.yml --data-value-yaml rabbitmq.replicas=$replicas --data-value-yaml openshift=$openshift | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
 

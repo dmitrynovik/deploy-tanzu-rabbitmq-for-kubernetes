@@ -14,5 +14,7 @@ spec:
         template:
           spec:
             containers: []
+            #@ if data.values.openshift == 1:
             securityContext: {}
+            #@ end
 
