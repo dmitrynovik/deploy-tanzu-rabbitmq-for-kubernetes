@@ -42,3 +42,4 @@ Add following command-line argument:
 |prometheusrepourl|https://github.com/rabbitmq/cluster-operator.git | The repository of Prometheus K8S operator|
 |prometheusoperatorversion|v1.14.0 | The version of Prometheus operator|
 |certmanagervsersion|1.8.0| The version of K8S Cert Manager to install |
+|kubectl|kubectl|Pass `--kubectl oc` to install on OpenShift|
