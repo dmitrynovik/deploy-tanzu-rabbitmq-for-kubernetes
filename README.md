@@ -25,6 +25,11 @@ Tested to work on Ubuntu 21 and with RabbitMQ 1.3.0
 chmod +x install.sh
 ./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> [ --param1 value1 --param2 value2 ]
 ```
+### Openshift (experimental)
+Add following command-line argument:
+```
+--kubectl oc
+```
 
 ### Optional arguments
 | Parameter | Default Value | Meaning |
