@@ -126,17 +126,22 @@ chmod +x get_helm.sh
 ./get_helm.sh
 
 # TODO: fix Observability for Openshift
-if [[ $openshift -eq 1 ]] 
+if [ ! -d "cluster_operator" ] 
 then
-     echo "OPENSHIFT DETECTED, PLEASE INSTALL OBSERVABILITY TOOLS MANUALLY..."
+     if [[ $openshift -eq 1 ]] 
+     then
+          echo "OPENSHIFT DETECTED, PLEASE INSTALL OBSERVABILITY TOOLS MANUALLY..."
+     else
+          echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
+          git clone $prometheusrepourl
+          cd cluster-operator/observability/
+          git checkout $prometheusoperatorversion
+          chmod +x quickstart.sh
+          ./quickstart.sh
+          cd ../../
+     fi
 else
-     echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
-     git clone $prometheusrepourl
-     cd cluster-operator/observability/
-     git checkout $prometheusoperatorversion
-     chmod +x quickstart.sh
-     ./quickstart.sh
-     cd ../../
+     echo "Directory cluster-operator exists, skipping..."
 fi
 
 echo "INSTALLING CLUSTERS MONITOR..."
