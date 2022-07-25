@@ -15,6 +15,13 @@ spec:
     storage: #@ data.values.rabbitmq.storage
   #@ end
   replicas: #@ data.values.rabbitmq.replicas
+  resources:
+    requests:
+      cpu: #@ data.values.rabbitmq.cpu
+      memory: #@ data.values.rabbitmq.memory
+    limits:
+      cpu: #@ data.values.rabbitmq.cpu
+      memory: #@ data.values.rabbitmq.memory
   imagePullSecrets:
   - name: tanzu-rabbitmq-registry-creds
   #@ if data.values.rabbitmq.antiaffinity == 1:

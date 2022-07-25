@@ -19,10 +19,11 @@ cluster_partition_handling=pause_minority
 vm_memory_high_watermark_paging_ratio=0.99
 disk_free_limit_relative=1.5
 collect_statistics_interval=10000
+cpu=2
+memory=2Gi
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname=default # Override in Production (pass parameter)!
-persistent=0 # Set to 1 in Production (pass parameter)!
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -48,6 +49,8 @@ then
      echo "vmwarepassword not set"
      exit 1
 fi
+
+if [ -z $storageclassname ]; then persistent=0; else persistent=1; fi
 
 echo "namespace: $namespace"
 echo "tanzurmqversion: $tanzurmqversion"
@@ -162,6 +165,8 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.vm_memory_high_watermark_paging_ratio=$vm_memory_high_watermark_paging_ratio \
      --data-value-yaml rabbitmq.disk_free_limit.relative=$disk_free_limit_relative \
      --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
+     --data-value-yaml rabbitmq.cpu=$cpu \
+     --data-value-yaml rabbitmq.memory=$memory \
      --data-value-yaml openshift=$openshift \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 

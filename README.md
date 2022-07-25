@@ -21,10 +21,19 @@ N.B. Use this at your own risk: no liability is accepted.
 Tested to work on Ubuntu 21 and with RabbitMQ 1.3.0
 
 ## Usage
+
+The minimal usage on a Dev machine is:
+
 ```
 chmod +x install.sh
 ./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> [ --param1 value1 --param2 value2 ]
 ```
+
+NOTE: For Production, you'll need to specify few more arguments:
+* antiaffinity=1 (to schedule the pods on different zones)
+* storageclassname = your persistent storage class
+* storage = size of the storage e.g. 64Gi
+* (optional): CPU (default: 2 cores), memory: (default: 2Gi)
 ### Openshift (experimental)
 Add following command-line argument:
 ```
