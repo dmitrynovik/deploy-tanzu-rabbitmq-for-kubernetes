@@ -14,6 +14,14 @@ vmwareuser=""
 vmwarepassword=""
 certmanagervsersion=1.8.0
 kubectl=kubectl
+maxskew=1
+cluster_partition_handling = pause_minority
+vm_memory_high_watermark_paging_ratio = 0.99
+disk_free_limit_relative = 1.5
+collect_statistics_interval = 10000
+antiaffinity=0 # Override in Production (pass parameter)!
+storage="1Gi" # Override in Production (pass parameter)!
+storageclassname=default # Override in Production (pass parameter)!
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -137,7 +145,19 @@ echo "INSTALLING OPERATORS MONITOR..."
 $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
 
 echo "CREATE RABBITMQ CLUSTER"
-ytt -f cluster.yml --data-value-yaml rabbitmq.replicas=$replicas --data-value-yaml openshift=$openshift | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
+ytt -f cluster.yml \ 
+     --data-value-yaml rabbitmq.replicas=$replicas \
+     --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
+     --data-value-yaml rabbitmq.maxskew=$maxskew \
+     --data-value-yaml rabbitmq.storageclassname=$storageclassname \
+     --data-value-yaml rabbitmq.storage=$storage \
+     --data-value-yaml rabbitmq.cluster_partition_handling=$cluster_partition_handling \
+     --data-value-yaml rabbitmq.vm_memory_high_watermark_paging_ratio=$vm_memory_high_watermark_paging_ratio \
+     --data-value-yaml rabbitmq.disk_free_limit.relative=$disk_free_limit_relative \
+     --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
+     --data-value-yaml openshift=$openshift \
+     --output-files out \
+     | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
 
