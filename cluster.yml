@@ -9,9 +9,11 @@ metadata:
 spec:
   rabbitmq:
     additionalConfig: #@ additional_config
+  #@ if data.values.rabbitmq.persistent == 1:
   persistence:
     storageClassName: #@ data.values.rabbitmq.storageclassname
     storage: #@ data.values.rabbitmq.storage
+  #@ end
   replicas: #@ data.values.rabbitmq.replicas
   imagePullSecrets:
   - name: tanzu-rabbitmq-registry-creds

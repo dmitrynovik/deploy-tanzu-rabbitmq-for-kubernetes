@@ -19,9 +19,10 @@ cluster_partition_handling=pause_minority
 vm_memory_high_watermark_paging_ratio=0.99
 disk_free_limit_relative=1.5
 collect_statistics_interval=10000
-antiaffinity=0 # Override in Production (pass parameter)!
+antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname=default # Override in Production (pass parameter)!
+persistent=0 # Set to 1 in Production (pass parameter)!
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -154,6 +155,7 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.replicas=$replicas \
      --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
      --data-value-yaml rabbitmq.maxskew=$maxskew \
+     --data-value-yaml rabbitmq.persistent=$persistent \
      --data-value-yaml rabbitmq.storageclassname=$storageclassname \
      --data-value-yaml rabbitmq.storage=$storage \
      --data-value-yaml rabbitmq.cluster_partition_handling=$cluster_partition_handling \
