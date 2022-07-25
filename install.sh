@@ -150,7 +150,7 @@ echo "INSTALLING OPERATORS MONITOR..."
 $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
 
 echo "CREATE RABBITMQ CLUSTER"
-ytt -f cluster.yml \ 
+ytt -f cluster.yml \
      --data-value-yaml rabbitmq.replicas=$replicas \
      --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
      --data-value-yaml rabbitmq.maxskew=$maxskew \
