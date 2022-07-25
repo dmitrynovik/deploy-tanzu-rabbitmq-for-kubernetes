@@ -161,7 +161,6 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.disk_free_limit.relative=$disk_free_limit_relative \
      --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
      --data-value-yaml openshift=$openshift \
-     --output-files=out \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
