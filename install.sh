@@ -23,7 +23,7 @@ cpu=2
 memory=2Gi
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
-storageclassname=default # Override in Production (pass parameter)!
+storageclassname="" # Override in Production (pass parameter)!
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
