@@ -126,7 +126,7 @@ chmod +x get_helm.sh
 ./get_helm.sh
 
 # TODO: fix Observability for Openshift
-if [ ! -d "cluster_operator" ] 
+if [ ! -d "cluster-operator" ] 
 then
      if [[ $openshift -eq 1 ]] 
      then
