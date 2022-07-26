@@ -33,7 +33,13 @@ NOTE: For Production, you'll need to specify few more arguments:
 * antiaffinity=1 (to schedule the pods on different zones)
 * storageclassname = your persistent storage class
 * storage = size of the storage e.g. 64Gi
-* (optional): CPU (default: 2 cores), memory: (default: 2Gi)
+* (optional): cpu (default: 2 cores), memory: (default: 2Gi)
+
+Example of a Production deployment
+```
+./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi
+```
+
 ### Openshift (experimental)
 Add following command-line argument:
 ```
@@ -52,3 +58,12 @@ Add following command-line argument:
 |prometheusoperatorversion|v1.14.0 | The version of Prometheus operator|
 |certmanagervsersion|1.8.0| The version of K8S Cert Manager to install |
 |kubectl|kubectl|Pass `--kubectl oc` to install on OpenShift|
+|maxskew|1|when `antiaffinity=1` - max differenece in pods number between different availability zones, see the [Pod Topology Spread Constraints](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/)|
+|cluster_partition_handling|pause_minority|see [Network partitioning handling mode](https://www.rabbitmq.com/partitions.html)|
+|disk_free_limit_relative|1.5|See the [Configuring Disk Free Space Limit](https://www.rabbitmq.com/disk-alarms.html#configure)|
+|collect_statistics_interval|10 seconds|See the [Statistics Interval](https://www.rabbitmq.com/management.html#statistics-interval)|
+|cpu|2|number of cores per container|
+|memory|2Gi|memory per container|
+|antiaffinity|0|Set to 1 to deploy pods to different nodes in Production|
+|storage|1Gi|Reserved persistent disk space, set to larger value in Production|
+|storageclassname|none|Set to persistent storage class name in Production|
