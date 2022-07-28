@@ -24,6 +24,7 @@ memory=2Gi
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
+maxunavailable=1
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -171,7 +172,11 @@ ytt -f cluster.yml \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
-
+if [ $maxunavailable -gt 0 ] 
+then
+     echo "APPLYING the POD DISRUPTION BUDGET"
+     kubectl apply -f pod-disruption-budget.yaml -n $namespace --request-timeout=$requesttimeout
+fi
 
 
 
