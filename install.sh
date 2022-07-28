@@ -175,7 +175,7 @@ ytt -f cluster.yml \
 if [ $maxunavailable -gt 0 ] 
 then
      echo "APPLYING the POD DISRUPTION BUDGET"
-     kubectl apply -f pod-disruption-budget.yaml -n $namespace --request-timeout=$requesttimeout
+     kubectl apply -f pod_disruption_budget.yaml -n $namespace --request-timeout=$requesttimeout
 fi
 
 
