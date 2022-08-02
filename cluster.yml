@@ -9,7 +9,7 @@ metadata:
 spec:
   service:
     type: #@ data.values.servicetype
-    #@ if data.values.servicetype != "ClusterIP"
+    #@ if data.values.servicetype != "ClusterIP":
     ports:
       - name: amqp
         port: 5672
