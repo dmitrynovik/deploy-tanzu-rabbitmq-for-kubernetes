@@ -27,11 +27,13 @@ spec:
   #@ if data.values.rabbitmq.antiaffinity == 1:
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
               values:
               - tanzu-rabbitmq
         topologyKey: kubernetes.io/hostname
@@ -45,7 +47,7 @@ spec:
             #@ if data.values.openshift == 1:
             securityContext: {}
             #@ end
-            #@ if data.values.rabbitmq.antiaffinity == 1:
+            #@ if data.values.rabbitmq.maxskew > 0:
             topologySpreadConstraints:
             - maxSkew: #@ data.values.rabbitmq.maxskew
               topologyKey: "topology.kubernetes.io/zone"
