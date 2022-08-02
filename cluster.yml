@@ -27,13 +27,11 @@ spec:
   #@ if data.values.rabbitmq.antiaffinity == 1:
   affinity:
     podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
               values:
               - tanzu-rabbitmq
         topologyKey: kubernetes.io/hostname
