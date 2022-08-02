@@ -67,3 +67,4 @@ Add following command-line argument:
 |antiaffinity|0|Set to 1 to deploy pods to different nodes in Production|
 |storage|1Gi|Reserved persistent disk space, set to larger value in Production|
 |storageclassname|none|Set to persistent storage class name in Production|
+|servicetype|ClusterIp| `ClusterIP` or `NodePort` or `LoadBalancer`|

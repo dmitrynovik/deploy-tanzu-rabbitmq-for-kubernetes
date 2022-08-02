@@ -7,6 +7,8 @@ kind: RabbitmqCluster
 metadata:
   name: tanzu-rabbitmq
 spec:
+  service:
+    type: #@ data.values.servicetype
   rabbitmq:
     additionalConfig: #@ additional_config
   #@ if data.values.rabbitmq.persistent == 1:

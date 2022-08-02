@@ -26,6 +26,7 @@ antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
 maxunavailable=1
+servicetype=ClusterIP
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -176,6 +177,7 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.memory=$memory \
      --data-value-yaml rabbitmq.default_pass=$adminpassword \
      --data-value-yaml openshift=$openshift \
+     --data-value-yaml servicetype=$servicetype \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
