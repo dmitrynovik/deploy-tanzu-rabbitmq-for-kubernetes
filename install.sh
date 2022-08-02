@@ -32,7 +32,7 @@ while [ $# -gt 0 ]; do
 
    if [[ $1 == *"--"* ]]; then
         param="${1/--/}"
-        echo "param: $param"
+        #echo "param: $param"
         declare $param="$2"
         # echo $1 $2 // Optional to see the parameter:value result
    fi
