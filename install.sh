@@ -12,6 +12,7 @@ prometheusoperatorversion=v1.14.0
 requesttimeout=100s
 vmwareuser=""
 vmwarepassword=""
+adminpassword=""
 certmanagervsersion=1.8.0
 kubectl=kubectl
 maxskew=1
@@ -39,7 +40,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [ -z $vmwareuser ] 
+if [ -z $vmwareuser ]
 then
      echo "vmwareuser not set"
      exit 1
@@ -48,6 +49,13 @@ fi
 if [ -z $vmwarepassword ] 
 then
      echo "vmwarepassword not set"
+     exit 1
+fi
+
+
+if [ -z $adminpassword ] 
+then
+     echo "adminpassword not set"
      exit 1
 fi
 
@@ -168,6 +176,7 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
      --data-value-yaml rabbitmq.cpu=$cpu \
      --data-value-yaml rabbitmq.memory=$memory \
+     --data-value-yaml rabbitmq.default_pass=$adminpassword \
      --data-value-yaml openshift=$openshift \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 

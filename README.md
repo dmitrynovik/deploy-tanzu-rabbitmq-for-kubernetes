@@ -26,7 +26,7 @@ The minimal usage on a Dev machine is:
 
 ```
 chmod +x install.sh
-./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> [ --param1 value1 --param2 value2 ]
+./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --adminpassword <RabbitMQ admin user password> [ --param1 value1 --param2 value2 ]
 ```
 
 NOTE: For Production, you'll need to specify few more arguments:
@@ -37,7 +37,7 @@ NOTE: For Production, you'll need to specify few more arguments:
 
 Example of a Production deployment
 ```
-./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi
+./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi --adminpassword <a>
 ```
 
 ### Openshift (experimental)

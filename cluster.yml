@@ -1,6 +1,6 @@
 #@ load("@ytt:data", "data")
 
-#@ additional_config = "cluster_partition_handling = pause_minority\nvm_memory_high_watermark_paging_ratio={}\ndisk_free_limit.relative={}\ncollect_statistics_interval={}\n".format(data.values.rabbitmq.vm_memory_high_watermark_paging_ratio, data.values.rabbitmq.disk_free_limit.relative, data.values.rabbitmq.collect_statistics_interval)
+#@ additional_config = "cluster_partition_handling = pause_minority\nvm_memory_high_watermark_paging_ratio={}\ndisk_free_limit.relative={}\ncollect_statistics_interval={}\ndefault_user=admin\ndefault_pass={}".format(data.values.rabbitmq.vm_memory_high_watermark_paging_ratio, data.values.rabbitmq.disk_free_limit.relative, data.values.rabbitmq.collect_statistics_interval, data.values.rabbitmq.default_pass)
 
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
