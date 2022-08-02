@@ -9,6 +9,21 @@ metadata:
 spec:
   service:
     type: #@ data.values.servicetype
+    #@ if data.values.servicetype != "ClusterIP"
+    ports:
+      - name: amqp
+        port: 5672
+        targetPort: 5672
+        protocol: TCP
+      - name: http
+        port: 80
+        targetPort: 15672
+        protocol: TCP
+      - name: metrics
+        port: 15692
+        targetPort: 15692
+        protocol: TCP
+      #@ end
   rabbitmq:
     additionalConfig: #@ additional_config
   #@ if data.values.rabbitmq.persistent == 1:
