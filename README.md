@@ -37,7 +37,7 @@ NOTE: For Production, you'll need to specify few more arguments:
 
 Example of a Production deployment
 ```
-./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi --adminpassword <a>
+./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi --adminpassword <RabbitMQ admin user password>
 ```
 
 ### Openshift (experimental)
