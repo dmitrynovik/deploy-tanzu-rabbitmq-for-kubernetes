@@ -68,3 +68,7 @@ Add following command-line argument:
 |storage|1Gi|Reserved persistent disk space, set to larger value in Production|
 |storageclassname|none|Set to persistent storage class name in Production|
 |servicetype|ClusterIp| `ClusterIP` or `NodePort` or `LoadBalancer`|
+|install_carvel|1|if to install `carvel` toolchain|
+|install_cert_manager|1|if to install `cert-manager`|
+|install_helm|1|if to install `helm`|
+|install_prometheus|1|if to install and configure `Prometheus` and `Grafana` for Observability|
