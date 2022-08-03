@@ -69,6 +69,13 @@ echo "prometheusoperatorversion: $prometheusoperatorversion"
 echo "requesttimeout: $requesttimeout"
 echo "certmanagervsersion: $certmanagervsersion"
 echo "kubectl: $kubectl"
+echo "antiaffinity: $antiaffinity"
+echo "memory: $memory"
+echo "storageclassname: $storageclassname"
+echo "storage: $storage"
+echo "maxskew: $maxskew"
+echo "maxunavailable: $maxunavailable"
+echo "servicetype: $servicetype"
 
 case $kubectl in
 "oc") openshift=1 ;;
