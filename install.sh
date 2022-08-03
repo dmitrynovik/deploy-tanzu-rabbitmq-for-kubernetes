@@ -27,6 +27,10 @@ storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
 maxunavailable=1
 servicetype=ClusterIP
+install_carvel=1
+install_cert_manager=1
+install_helm=1
+install_prometheus=1
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -87,34 +91,40 @@ $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeou
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
-if command -v shasum &> /dev/null
+if [$install_carvel -gt 0]
 then
-     if command -v wget &> /dev/null
+     if command -v shasum &> /dev/null
      then
-          echo "INSTALLING CARVEL USING wget"
-          wget -O- https://carvel.dev/install.sh | bash
-     elif command -v curl &> /dev/null
-     then
-          echo "INSTALLING CARVEL USING curl"
-          curl -L https://carvel.dev/install.sh | bash
+          if command -v wget &> /dev/null
+          then
+               echo "INSTALLING CARVEL USING wget"
+               wget -O- https://carvel.dev/install.sh | bash
+          elif command -v curl &> /dev/null
+          then
+               echo "INSTALLING CARVEL USING curl"
+               curl -L https://carvel.dev/install.sh | bash
+          else
+               echo "Error: neither wget nor curl detected"
+               exit 1
+          fi
      else
-          echo "Error: neither wget nor curl detected"
-          exit 1
+          echo "WARNING: shasum IS MISSING !"
+          chmod +x install_carvel.sh
+          ./install_carvel.sh
      fi
-else
-     echo "WARNING: shasum IS MISSING !"
-     chmod +x install_carvel.sh
-     ./install_carvel.sh
+
+     echo "INSTALLING KAPP-CONTROLLER"
+     $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
+
+     echo "INSTALLING SECRETGEN-CONTROLLER"
+     $kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 fi
 
-echo "INSTALLING KAPP-CONTROLLER"
-$kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
-
-echo "INSTALLING SECRETGEN-CONTROLLER"
-$kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
-
-echo "INSTALLING CERT-MANAGER" # @Param: version
-$kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
+if [$install_cert_manager -gt 0]
+then
+     echo "INSTALLING CERT-MANAGER" # @Param: version
+     $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
+fi
 
 echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
 export RMQ_docker__username="$vmwareuser"
@@ -132,18 +142,19 @@ export RMQ_rabbitmq__version="$tanzurmqversion"
 export RMQ_rabbitmq__serviceaccount="$serviceaccount"
 ytt -f packageInstall.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
 
-echo "INSTALLING HELM..."
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod +x get_helm.sh
-./get_helm.sh
+if [$install_helm -gt 0]
+then
+     echo "INSTALLING HELM..."
+     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+     chmod +x get_helm.sh
+     ./get_helm.sh
+fi
 
-# TODO: fix Observability for Openshift
+# TODO: fix Observability installation for Openshift
 if [ ! -d "cluster-operator" ] 
 then
-     if [[ $openshift -eq 1 ]] 
+     if [[ $install_prometheus -gt 0 ]] 
      then
-          echo "OPENSHIFT DETECTED, PLEASE INSTALL OBSERVABILITY TOOLS MANUALLY..."
-     else
           echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
           git clone $prometheusrepourl
           cd cluster-operator/observability/
