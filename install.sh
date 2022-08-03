@@ -91,7 +91,7 @@ $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeou
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
 $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
 
-if [$install_carvel -gt 0]
+if [ $install_carvel -gt 0 ]
 then
      if command -v shasum &> /dev/null
      then
@@ -120,7 +120,7 @@ then
      $kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 fi
 
-if [$install_cert_manager -gt 0]
+if [ $install_cert_manager -gt 0 ]
 then
      echo "INSTALLING CERT-MANAGER" # @Param: version
      $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
@@ -142,7 +142,7 @@ export RMQ_rabbitmq__version="$tanzurmqversion"
 export RMQ_rabbitmq__serviceaccount="$serviceaccount"
 ytt -f packageInstall.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
 
-if [$install_helm -gt 0]
+if [ $install_helm -gt 0 ]
 then
      echo "INSTALLING HELM..."
      curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
