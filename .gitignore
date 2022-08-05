@@ -1,4 +1,6 @@
 [Oo]ut/
+cluster-operator/
+
 test.yml
 get_helm.sh
 
