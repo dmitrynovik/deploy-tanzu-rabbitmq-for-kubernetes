@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-cert
+spec:
+  dnsNames:
+    - "*.tanzu-rabbitmq-nodes.rabbitmq-system.svc.cluster.local"
+  secretName: root-secret
+  issuerRef:
+    kind: ClusterIssuer
+    name: selfsigned-cluster-issuer

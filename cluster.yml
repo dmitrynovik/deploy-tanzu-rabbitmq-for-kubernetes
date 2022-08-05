@@ -17,6 +17,8 @@ spec:
     storage: #@ data.values.rabbitmq.storage
   #@ end
   replicas: #@ data.values.rabbitmq.replicas
+  tls:
+    secretName: root-secret
   resources:
     requests:
       cpu: #@ data.values.rabbitmq.cpu
