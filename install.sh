@@ -33,6 +33,7 @@ install_helm=1
 install_prometheus=1
 create_secret=1
 install_package=1
+tls_secret=""
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -198,6 +199,7 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.default_pass=$adminpassword \
      --data-value-yaml openshift=$openshift \
      --data-value-yaml servicetype=$servicetype \
+     --data-value-yaml tls_secret=$tls_secret
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
