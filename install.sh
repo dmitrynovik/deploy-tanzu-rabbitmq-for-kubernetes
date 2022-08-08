@@ -31,6 +31,8 @@ install_carvel=1
 install_cert_manager=1
 install_helm=1
 install_prometheus=1
+create_secret=1
+install_package=1
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -126,21 +128,27 @@ then
      $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
 fi
 
-echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
-export RMQ_docker__username="$vmwareuser"
-export RMQ_docker__password="$vmwarepassword"
-export RMQ_docker__server="registry.tanzu.vmware.com"
-export RMQ_rabbitmq__namespace="$namespace"
-ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
+if [ $create_secret -gt 0]
+then
+     echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
+     export RMQ_docker__username="$vmwareuser"
+     export RMQ_docker__password="$vmwarepassword"
+     export RMQ_docker__server="registry.tanzu.vmware.com"
+     export RMQ_rabbitmq__namespace="$namespace"
+     ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
+fi
 
-echo "DEPLOYING REPOSITORY..."
-export RMQ_rabbitmq__image="registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:$tanzurmqversion"
-ytt -f repo.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq-repo -y -n $namespace -f-
+if [ $install_package -gt 0]
+then
+     echo "DEPLOYING REPOSITORY..."
+     export RMQ_rabbitmq__image="registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:$tanzurmqversion"
+     ytt -f repo.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq-repo -y -n $namespace -f-
 
-echo "DEPLOYING PACKAGE INSTALL..."
-export RMQ_rabbitmq__version="$tanzurmqversion"
-export RMQ_rabbitmq__serviceaccount="$serviceaccount"
-ytt -f packageInstall.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
+     echo "DEPLOYING PACKAGE INSTALL..."
+     export RMQ_rabbitmq__version="$tanzurmqversion"
+     export RMQ_rabbitmq__serviceaccount="$serviceaccount"
+     ytt -f packageInstall.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
+fi
 
 if [ $install_helm -gt 0 ]
 then
@@ -162,15 +170,16 @@ then
           chmod +x quickstart.sh
           ./quickstart.sh
           cd ../../
+
+          echo "INSTALLING PROMETHEUS SERVICE MONITOR..."
+          $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
+
+          echo "INSTALLING OPERATORS MONITOR..."
+          $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
      fi
 else
      echo "Directory cluster-operator exists, skipping..."
 fi
-
-echo "INSTALLING CLUSTERS MONITOR..."
-$kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
-echo "INSTALLING OPERATORS MONITOR..."
-$kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
 
 echo "CREATE RABBITMQ CLUSTER"
 ytt -f cluster.yml \
