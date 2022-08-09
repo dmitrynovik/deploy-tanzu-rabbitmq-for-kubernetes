@@ -199,7 +199,7 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.default_pass=$adminpassword \
      --data-value-yaml openshift=$openshift \
      --data-value-yaml servicetype=$servicetype \
-     --data-value-yaml tls_secret=$tls_secret
+     --data-value-yaml tls_secret=$tls_secret \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
