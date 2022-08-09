@@ -129,7 +129,7 @@ then
      $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
 fi
 
-if [ $create_secret -gt 0]
+if [ $create_secret -gt 0 ]
 then
      echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
      export RMQ_docker__username="$vmwareuser"
@@ -139,7 +139,7 @@ then
      ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
 fi
 
-if [ $install_package -gt 0]
+if [ $install_package -gt 0 ]
 then
      echo "DEPLOYING REPOSITORY..."
      export RMQ_rabbitmq__image="registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:$tanzurmqversion"
