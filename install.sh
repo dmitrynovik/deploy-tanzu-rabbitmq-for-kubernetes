@@ -8,7 +8,7 @@ serviceaccount=rabbitmq
 namespace="rabbitmq-system"
 replicas=3
 prometheusrepourl="https://github.com/rabbitmq/cluster-operator.git"
-prometheusoperatorversion=v1.14.0
+#prometheusoperatorversion=v1.14.0
 requesttimeout=100s
 vmwareuser=""
 vmwarepassword=""
@@ -72,7 +72,7 @@ echo "tanzurmqversion: $tanzurmqversion"
 echo "serviceaccount: $serviceaccount"
 echo "replicas: $replicas"
 echo "prometheusrepourl: $prometheusrepourl"
-echo "prometheusoperatorversion: $prometheusoperatorversion"
+#echo "prometheusoperatorversion: $prometheusoperatorversion"
 echo "requesttimeout: $requesttimeout"
 echo "certmanagervsersion: $certmanagervsersion"
 echo "kubectl: $kubectl"
@@ -167,7 +167,8 @@ then
           echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
           git clone $prometheusrepourl
           cd cluster-operator/observability/
-          git checkout $prometheusoperatorversion
+          # Uncomment the line below to install certain prometheus operator version (as opposed to always get latest):
+          #git checkout $prometheusoperatorversion
           chmod +x quickstart.sh
           ./quickstart.sh
           cd ../../
