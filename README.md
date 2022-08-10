@@ -68,7 +68,10 @@ Add following command-line argument:
 |storage|1Gi|Reserved persistent disk space, set to larger value in Production|
 |storageclassname|none|Set to persistent storage class name in Production|
 |servicetype|ClusterIp| `ClusterIP` or `NodePort` or `LoadBalancer`|
-|install_carvel|1|if to install `carvel` toolchain|
-|install_cert_manager|1|if to install `cert-manager`|
-|install_helm|1|if to install `helm`|
-|install_prometheus|1|if to install and configure `Prometheus` and `Grafana` for Observability|
+|install_carvel|1|if to install `carvel` toolchain  (skip otherwise)|
+|install_cert_manager|1|if to install `cert-manager`  (skip otherwise)|
+|install_helm|1|if to install `helm`  (skip otherwise)|
+|install_prometheus|1|if to install and configure `Prometheus` and `Grafana` for Observability (skip otherwise)|
+|create_secret|1|if to create VMWare registry pull secret in K8S|
+|install_package|1|if to install RabbitMQ repository AND package (skip otherwise)|
+|tls_secret|""|if not emply, will enable TLS with a `secretName` passed as `tls_secret`. Prerequisiste: must create a certificate in `cert-manager` and deploy to K8S cluster|
