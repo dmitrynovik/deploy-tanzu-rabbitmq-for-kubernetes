@@ -1,0 +1,17 @@
+      2 ghcr.io/vmware-tanzu/carvel-kapp-controller@sha256:1ab8db7f33d9c59dc8250827e543b9d2cc03415e6b5b489ee078acc6b267296f
+      1 ghcr.io/vmware-tanzu/carvel-secretgen-controller@sha256:00466d6beb98fdd8aed61642013ea0ba538bb496e84745c8c2e1871fdc54b1a9
+      1 grafana/grafana:8.3.4
+      1 k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.3.0
+      1 quay.io/jetstack/cert-manager-cainjector:v1.8.0
+      1 quay.io/jetstack/cert-manager-controller:v1.8.0
+      1 quay.io/jetstack/cert-manager-webhook:v1.8.0
+      2 quay.io/kiwigrid/k8s-sidecar:1.15.1
+      1 quay.io/prometheus/alertmanager:v0.23.0
+      2 quay.io/prometheus-operator/prometheus-config-reloader:v0.53.1
+      1 quay.io/prometheus-operator/prometheus-operator:v0.53.1
+      1 quay.io/prometheus/prometheus:v2.32.1
+      1 rabbitmqoperator/cluster-operator:1.14.0
+      3 registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo@sha256:399c3825c5754177d56311e90c7ef7f84a077405370eb65a6d56cba4c21a46b6
+      1 registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo@sha256:5052e8bdb26996c62315f0707c6fb291fd84492e360cca7351e2c3fdf659be43
+      1 registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo@sha256:84ce21e9e2d6ceb8b93d9daf0b7cc1550b6ed86be5b3acd8b0816eddc1b87dc2
+      1 registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo@sha256:c517efa22f7beac8349b27f1331388dd002c1e975b864d6d967afaf13d3904ba
