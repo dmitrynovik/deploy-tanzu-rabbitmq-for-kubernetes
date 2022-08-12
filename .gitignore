@@ -3,5 +3,7 @@ cluster-operator/
 
 test.yml
 get_helm.sh
+cheatsheet.txt
+
 
 
