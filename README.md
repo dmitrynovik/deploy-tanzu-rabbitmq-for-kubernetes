@@ -75,3 +75,4 @@ Add following command-line argument:
 |create_secret|1|if to create VMWare registry pull secret in K8S|
 |install_package|1|if to install RabbitMQ repository AND package (skip otherwise)|
 |tls_secret|""|if not emply, will enable TLS with a `secretName` passed as `tls_secret`. Prerequisiste: must create a certificate in `cert-manager` and deploy to K8S cluster|
+|max_unavailable|1|pod disruption budget|

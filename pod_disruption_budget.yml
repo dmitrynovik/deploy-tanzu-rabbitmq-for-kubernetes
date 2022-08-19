@@ -3,7 +3,7 @@ kind: PodDisruptionBudget
 metadata:
   name: production-ready-tanzu-rabbitmq
 spec:
-  maxUnavailable: 1
+  maxUnavailable: #@ data.values.rabbitmq.max_unavailable
   selector:
     matchLabels:
       app.kubernetes.io/name: tanzu-rabbitmq

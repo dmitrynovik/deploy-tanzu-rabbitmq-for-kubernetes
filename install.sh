@@ -25,7 +25,7 @@ memory=2Gi
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
-maxunavailable=1
+max_unavailable=1
 servicetype=ClusterIP
 install_carvel=1
 install_cert_manager=1
@@ -223,10 +223,11 @@ ytt -f cluster.yml \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 
-if [ $maxunavailable -gt 0 ] 
+if [ $max_unavailable -gt 0 ] 
 then
      echo "APPLYING the POD DISRUPTION BUDGET"
-     kubectl apply -f pod_disruption_budget.yml -n $namespace --request-timeout=$requesttimeout
+     ytt -f pod_disruption_budget.yml --data-value-yaml rabbitmq.max_unavailable=$max_unavailable \
+     | kubectl apply -n $namespace --request-timeout=$requesttimeout -f-
 fi
 
 
