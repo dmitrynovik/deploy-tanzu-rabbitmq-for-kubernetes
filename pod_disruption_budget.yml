@@ -1,3 +1,5 @@
+#@ load("@ytt:data", "data")
+
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
