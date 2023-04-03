@@ -81,6 +81,16 @@ Add following command-line argument:
 |install_package|1|if to install RabbitMQ repository AND package (skip otherwise)|
 |tls_secret|""|if not emply, will enable TLS with a `secretName` passed as `tls_secret`. Prerequisiste: must create a certificate in `cert-manager` and deploy to K8S cluster|
 |max_unavailable|1|pod disruption budget|
+|enable_amqp_1_0|0|if to enable the AMQP 1.0 plugin|
+|enable_ldap|1|if to enable the LDAP plugin|
+|enable_oauth2|1|if to enable the Oauth2 plugin|
+|enable_consistent_hash_exchange|1|if to enable the Consistent Hash Exchange plugin|
+|enable_federation|0|if to enable the Federation plugin|
+|enable_shovel|0|if to enable the Shovel plugin|
+|enable_mqtt|0|if to enable the MQTT plugin|
+|enable_stomp|0|if to enable the Stomp plugin|
+|enable_stream|1|if to enable the Stream plugin|
+|enable_top|1|if to enable the Top plugin|
 
 ### To remove RabbitMQ cluster:
 ```
