@@ -40,6 +40,11 @@ Example of a Production deployment
 ./install.sh --vmwareuser <your vmware registry username> --vmwarepassword <your vmware registry password> --antiaffinity 1 storage <storage size> storageclassname <storage class> cpu 4 memory 4Gi --adminpassword <RabbitMQ admin user password>
 ```
 
+Modify cluster only (NOT the first deployment):
+```
+--install_carvel 0 --install_cert_manager 0 --create_secret 0 --install_helm 0 --install_prometheus 0
+```
+
 ### Openshift (experimental)
 Add following command-line argument:
 ```
