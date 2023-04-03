@@ -11,10 +11,6 @@ spec:
     type: #@ data.values.servicetype
   rabbitmq:
     additionalPlugins:
-  #@ if data.values.rabbitmq.enable_management == 1:
-      - rabbitmq_management
-      - rabbitmq_management_agent
-  #@ end
   #@ if data.values.rabbitmq.enable_amqp_1_0 == 1:
       - rabbitmq_amqp1_0
   #@ end
@@ -51,6 +47,7 @@ spec:
       - rabbitmq_web_stomp
   #@ end
     additionalConfig: #@ additional_config
+  #@ if data.values.rabbitmq.persistent == 1:
   persistence:
     storageClassName: #@ data.values.rabbitmq.storageclassname
     storage: #@ data.values.rabbitmq.storage

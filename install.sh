@@ -35,7 +35,6 @@ create_secret=1
 install_package=1
 tls_secret=""
 
-enable_management=1
 enable_amqp_1_0=0
 enable_ldap=1
 enable_oauth2=1
@@ -253,9 +252,8 @@ ytt -f cluster.yml \
      --data-value-yaml rabbitmq.enable_shovel=$enable_shovel \
      --data-value-yaml rabbitmq.enable_mqtt=$enable_mqtt \
      --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
-     --data-value-yaml rabbitmq.enable_stream$enable_stream \
+     --data-value-yaml rabbitmq.enable_stream=$enable_stream \
      --data-value-yaml rabbitmq.enable_top=$enable_top \
-     --data-value-yaml rabbitmq.enable_management=$enable_management \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 if [ $max_unavailable -gt 0 ] 
