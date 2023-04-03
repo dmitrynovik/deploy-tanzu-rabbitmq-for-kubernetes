@@ -3,7 +3,7 @@
 set -eo pipefail
 
 # Parameters with default values (can override):
-tanzurmqversion=1.3.0
+tanzurmqversion=1.4.0
 serviceaccount=rabbitmq
 namespace="rabbitmq-system"
 replicas=3
@@ -13,7 +13,7 @@ requesttimeout=100s
 vmwareuser=""
 vmwarepassword=""
 adminpassword=""
-certmanagervsersion=1.8.0
+certmanagervsersion=1.11.0
 kubectl=kubectl
 maxskew=0
 cluster_partition_handling=pause_minority
@@ -21,12 +21,12 @@ vm_memory_high_watermark_paging_ratio=0.99
 disk_free_limit_relative=1.5
 collect_statistics_interval=10000
 cpu=2
-memory=2Gi
+memory=1Gi # adjust for Production!
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
 max_unavailable=1
-servicetype=ClusterIP
+servicetype=LoadBalancer
 install_carvel=1
 install_cert_manager=1
 install_helm=1
@@ -173,7 +173,19 @@ fi
 if [ $install_helm -gt 0 ]
 then
      echo "INSTALLING HELM..."
-     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+     if command -v wget &> /dev/null
+          then
+               echo "INSTALLING HELM USING wget"
+               wget -O get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          elif command -v curl &> /dev/null
+          then
+               echo "INSTALLING HELM USING curl"
+               curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          else
+               echo "Error: neither wget nor curl detected"
+               exit 1
+          fi
+          
      chmod +x get_helm.sh
      ./get_helm.sh
 fi
