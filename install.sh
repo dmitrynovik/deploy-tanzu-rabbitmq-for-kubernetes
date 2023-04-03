@@ -245,17 +245,17 @@ ytt -f cluster.yml \
      --data-value-yaml openshift=$openshift \
      --data-value-yaml servicetype=$servicetype \
      --data-value-yaml tls_secret=$tls_secret \
-     --data-value-yaml enable_amqp_1_0=$enable_amqp_1_0 \
-     --data-value-yaml enable_ldap=$enable_ldap \
-     --data-value-yaml enable_oauth2=$enable_oauth2 \
-     --data-value-yaml enable_consistent_hash_exchange=$enable_consistent_hash_exchange \
-     --data-value-yaml enable_federation=$enable_federation \
-     --data-value-yaml enable_shovel=$enable_shovel \
-     --data-value-yaml enable_mqtt=$enable_mqtt \
-     --data-value-yaml enable_stomp=$enable_stomp \
-     --data-value-yaml enable_stream$enable_stream \
-     --data-value-yaml enable_top=$enable_top \
-     --data-value-yaml enable_management=$enable_management \
+     --data-value-yaml rabbitmq.enable_amqp_1_0=$enable_amqp_1_0 \
+     --data-value-yaml rabbitmq.enable_ldap=$enable_ldap \
+     --data-value-yaml rabbitmq.enable_oauth2=$enable_oauth2 \
+     --data-value-yaml rabbitmq.enable_consistent_hash_exchange=$enable_consistent_hash_exchange \
+     --data-value-yaml rabbitmq.enable_federation=$enable_federation \
+     --data-value-yaml rabbitmq.enable_shovel=$enable_shovel \
+     --data-value-yaml rabbitmq.enable_mqtt=$enable_mqtt \
+     --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
+     --data-value-yaml rabbitmq.enable_stream$enable_stream \
+     --data-value-yaml rabbitmq.enable_top=$enable_top \
+     --data-value-yaml rabbitmq.enable_management=$enable_management \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
 if [ $max_unavailable -gt 0 ] 

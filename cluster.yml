@@ -11,42 +11,42 @@ spec:
     type: #@ data.values.servicetype
   rabbitmq:
     additionalPlugins:
-  #@ if data.values.enable_management == 1:
+  #@ if data.values.rabbitmq.enable_management == 1:
       - rabbitmq_management
       - rabbitmq_management_agent
   #@ end
-  #@ if data.values.enable_amqp_1_0 == 1:
+  #@ if data.values.rabbitmq.enable_amqp_1_0 == 1:
       - rabbitmq_amqp1_0
   #@ end
-  #@ if data.values.enable_top == 1:
+  #@ if data.values.rabbitmq.enable_top == 1:
       - rabbitmq_top
   #@ end
-  #@ if data.values.enable_ldap == 1:
+  #@ if data.values.rabbitmq.enable_ldap == 1:
       - rabbitmq_auth_backend_ldap
   #@ end
-  #@ if data.values.enable_oauth2 == 1:
+  #@ if data.values.rabbitmq.enable_oauth2 == 1:
       - rabbitmq_auth_backend_oauth2
   #@ end
-  #@ if data.values.enable_consistent_hash_exchange == 1:
+  #@ if data.values.rabbitmq.enable_consistent_hash_exchange == 1:
       - rabbitmq_consistent_hash_exchange
   #@ end
-  #@ if data.values.enable_federation == 1:
+  #@ if data.values.rabbitmq.enable_federation == 1:
       - rabbitmq_federation
       - rabbitmq_federation_management
   #@ end
-  #@ if data.values.enable_shovel == 1:
+  #@ if data.values.rabbitmq.enable_shovel == 1:
       - rabbitmq_shovel
       - rabbitmq_shovel_management
   #@ end
-  #@ if data.values.enable_stream == 1:
+  #@ if data.values.rabbitmq.enable_stream == 1:
       - rabbitmq_stream
       - rabbitmq_stream_management
   #@ end
-  #@ if data.values.enable_mqtt == 1:
+  #@ if data.values.rabbitmq.enable_mqtt == 1:
       - rabbitmq_mqtt
       - rabbitmq_web_mqtt
   #@ end
-  #@ if data.values.enable_stomp == 1:
+  #@ if data.values.rabbitmq.enable_stomp == 1:
       - rabbitmq_stomp
       - rabbitmq_web_stomp
   #@ end
