@@ -35,6 +35,18 @@ create_secret=1
 install_package=1
 tls_secret=""
 
+enable_amqp_1_0=0
+enable_ldap=1
+enable_oauth2=1
+enable_consistent_hash_exchange=1
+enable_federation=1
+enable_shovel=1
+enable_mqtt=0
+enable_stomp=0
+enable_stream=1
+enable_top=1
+
+
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
 
@@ -232,8 +244,17 @@ ytt -f cluster.yml \
      --data-value-yaml openshift=$openshift \
      --data-value-yaml servicetype=$servicetype \
      --data-value-yaml tls_secret=$tls_secret \
+     --data-value-yaml rabbitmq.enable_amqp_1_0=$enable_amqp_1_0 \
+     --data-value-yaml rabbitmq.enable_ldap=$enable_ldap \
+     --data-value-yaml rabbitmq.enable_oauth2=$enable_oauth2 \
+     --data-value-yaml rabbitmq.enable_consistent_hash_exchange=$enable_consistent_hash_exchange \
+     --data-value-yaml rabbitmq.enable_federation=$enable_federation \
+     --data-value-yaml rabbitmq.enable_shovel=$enable_shovel \
+     --data-value-yaml rabbitmq.enable_mqtt=$enable_mqtt \
+     --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
+     --data-value-yaml rabbitmq.enable_stream=$enable_stream \
+     --data-value-yaml rabbitmq.enable_top=$enable_top \
      | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
-
 
 if [ $max_unavailable -gt 0 ] 
 then
