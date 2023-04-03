@@ -81,3 +81,14 @@ Add following command-line argument:
 ```
 kubectl -n rabbitmq-system delete RabbitmqCluster tanzu-rabbitmq
 ```
+
+### Running the Performance Test
+[Pre-requisiste: Get the RabbitMQ perf-test](https://rabbitmq.github.io/rabbitmq-perf-test/stable/htmlsingle/)
+
+Example of the usage with Quorum queues:
+```
+bin/runjava com.rabbitmq.perf.PerfTest --quorum-queue --queue quorum_test -h amqp://admin:admin@172.18.255.200 --size 2048 --rate 2000 --shutdown-timeout 60
+
+```
+
+
