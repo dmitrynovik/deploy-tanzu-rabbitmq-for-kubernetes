@@ -45,7 +45,7 @@ enable_mqtt=0
 enable_stomp=0
 enable_stream=1
 enable_top=1
-enable_warm_standby_replication_plugin=1
+enable_warm_standby_replication_plugin=0
 
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
