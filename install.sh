@@ -3,7 +3,7 @@
 set -eo pipefail
 
 # Parameters with default values (can override):
-tanzurmqversion=1.4.0
+tanzurmqversion=1.5.3
 serviceaccount=rabbitmq
 namespace="rabbitmq-system"
 replicas=3
@@ -13,7 +13,7 @@ requesttimeout=100s
 vmwareuser=""
 vmwarepassword=""
 adminpassword=""
-certmanagervsersion=1.11.0
+certmanagervsersion=1.13.3
 kubectl=kubectl
 maxskew=0
 cluster_partition_handling=pause_minority
@@ -21,7 +21,7 @@ vm_memory_high_watermark_paging_ratio=0.99
 disk_free_limit_relative=1.5
 collect_statistics_interval=10000
 cpu=2
-memory=1Gi # adjust for Production!
+memory=2Gi # adjust for Production!
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
