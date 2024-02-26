@@ -6,7 +6,7 @@ set -eo pipefail
 tanzurmqversion=1.5.3
 serviceaccount=rabbitmq
 namespace="rabbitmq-system"
-rabbitmnq_cluster_name="rabbit-1"
+rabbitmnq_cluster_name="rabbit-1-upstream"
 install_prerequisites=1
 install_rabbitmq_cluster=1
 replicas=3
@@ -24,7 +24,7 @@ vm_memory_high_watermark_paging_ratio=0.99
 disk_free_limit_relative=1.5
 collect_statistics_interval=10000
 cpu=2
-memory=2Gi # adjust for Production!
+memory=1Gi # adjust for Production!
 antiaffinity=0 # Set to 1 in Production (pass parameter)!
 storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
@@ -121,18 +121,20 @@ case $kubectl in
 esac
 
 echo "CREATE NAMESPACE $namespace if does not exist..."
-$kubectl create namespace $namespace --dry-run=client -o yaml | $kubectl apply -f-
+sudo $kubectl create namespace $namespace --dry-run=client -o yaml | sudo $kubectl apply -f-
 
 echo "CREATE SERVICEACCOUNT $serviceaccount if does not exist..."
-$kubectl create serviceaccount $serviceaccount -n $namespace --dry-run=client -o yaml | $kubectl apply -f-
+sudo $kubectl create serviceaccount $serviceaccount -n $namespace --dry-run=client -o yaml | sudo $kubectl apply -f-
 
 echo "CREATING CLUSTER ROLE"
-$kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
+sudo $kubectl apply -f clusterrole.yml -n $namespace --request-timeout=$requesttimeout
 
 echo "CREEATING the CLUSTER rmq ROLE BINDING if does not exist..."
-$kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount --request-timeout=$requesttimeout --dry-run=client -o yaml | $kubectl apply -f-
+sudo $kubectl create clusterrolebinding rmq --clusterrole tanzu-rabbitmq-crd-install --serviceaccount $namespace:$serviceaccount \
+     --request-timeout=$requesttimeout --dry-run=client -o yaml \
+     | sudo $kubectl apply -f-
 
-if [ $install_carvel -gt 0 ]
+if [ $install_carvel -gt 0 -a $install_prerequisites -gt 0 ]
 then
      if command -v shasum &> /dev/null
      then
@@ -155,16 +157,16 @@ then
      fi
 
      echo "INSTALLING KAPP-CONTROLLER"
-     $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
+     sudo $kubectl apply -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 
      echo "INSTALLING SECRETGEN-CONTROLLER"
-     $kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
+     sudo $kubectl apply -f https://github.com/vmware-tanzu/carvel-secretgen-controller/releases/latest/download/release.yml --request-timeout=$requesttimeout
 fi
 
-if [ $install_cert_manager -gt 0 ]
+if [ $install_cert_manager -gt 0 -a $install_prerequisites -gt 0 ]
 then
      echo "INSTALLING CERT-MANAGER" # @Param: version
-     $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
+     sudo $kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$certmanagervsersion/cert-manager.yaml --request-timeout=$requesttimeout
 fi
 
 if [ $create_secret -gt 0 ]
@@ -174,22 +176,22 @@ then
      export RMQ_docker__password="$registrypassword"
      export RMQ_docker__server="registry.tanzu.vmware.com"
      export RMQ_rabbitmq__namespace="$namespace"
-     ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
+     ytt -f secret.yml --data-values-env RMQ | sudo kubectl apply -f-
 fi
 
-if [ $install_package -gt 0 ]
+if [ $install_package -gt 0 -a $install_prerequisites -gt 0 ]
 then
      echo "DEPLOYING REPOSITORY..."
      export RMQ_rabbitmq__image="registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:$tanzurmqversion"
-     ytt -f repo.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq-repo -y -n $namespace -f-
+     ytt -f repo.yml --data-values-env RMQ | sudo kapp deploy --debug -a tanzu-rabbitmq-repo -y -n $namespace -f-
 
      echo "DEPLOYING PACKAGE INSTALL..."
      export RMQ_rabbitmq__version="$tanzurmqversion"
      export RMQ_rabbitmq__serviceaccount="$serviceaccount"
-     ytt -f packageInstall.yml --data-values-env RMQ | kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
+     ytt -f packageInstall.yml --data-values-env RMQ | sudo kapp deploy --debug -a tanzu-rabbitmq  -y -n $namespace -f-
 fi
 
-if [ $install_helm -gt 0 ]
+if [ $install_helm -gt 0 -a $install_prerequisites -gt 0 ]
 then
      echo "INSTALLING HELM..."
      if command -v wget &> /dev/null
@@ -212,7 +214,7 @@ fi
 # TODO: fix Observability installation for Openshift
 if [ ! -d "cluster-operator" ] 
 then
-     if [[ $install_prometheus -gt 0 ]] 
+     if [ $install_prometheus -gt 0 -a $install_prerequisites -gt 0 ]
      then
           echo "INSTALLING PROMETHEUS OPERATOR FROM $prometheusrepourl"
           git clone $prometheusrepourl
@@ -224,19 +226,21 @@ then
           cd ../../
 
           echo "INSTALLING PROMETHEUS SERVICE MONITOR..."
-          $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
+          sudo $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-servicemonitor.yml
 
           echo "INSTALLING OPERATORS MONITOR..."
-          $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
+          sudo $kubectl apply --filename https://raw.githubusercontent.com/rabbitmq/cluster-operator/main/observability/prometheus/monitors/rabbitmq-cluster-operator-podmonitor.yml
      fi
 else
      echo "Directory cluster-operator exists, skipping..."
 fi
 
 if [ $install_rabbitmq_cluster -gt 0 ]
+then
      echo "CREATE RABBITMQ CLUSTER"
      ytt -f cluster.yml \
           --data-value-yaml rabbitmq.replicas=$replicas \
+          --data-value-yaml rabbitmq.cluster_name=$rabbitmnq_cluster_name \
           --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
           --data-value-yaml rabbitmq.maxskew=$maxskew \
           --data-value-yaml rabbitmq.persistent=$persistent \
@@ -263,7 +267,7 @@ if [ $install_rabbitmq_cluster -gt 0 ]
           --data-value-yaml rabbitmq.enable_stream=$enable_stream \
           --data-value-yaml rabbitmq.enable_top=$enable_top \
           --data-value-yaml rabbitmq.enable_warm_standby_replication_plugin=$enable_warm_standby_replication_plugin \
-          | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
+          | sudo kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
      if [ $max_unavailable -gt 0 ] 
      then

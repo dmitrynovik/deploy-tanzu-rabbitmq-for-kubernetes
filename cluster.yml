@@ -5,7 +5,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
-  name: tanzu-rabbitmq
+  name: #@ data.values.rabbitmq.cluster_name
 spec:
   service:
     type: #@ data.values.servicetype

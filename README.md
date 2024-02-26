@@ -42,7 +42,7 @@ Example of a Production deployment
 
 Modify cluster only (NOT the first deployment):
 ```
---install_carvel 0 --install_cert_manager 0 --create_secret 0 --install_helm 0 --install_prometheus 0
+--install_prerequisites 0
 ```
 
 ### Openshift (experimental)
@@ -54,6 +54,7 @@ Add following command-line argument:
 ### Optional arguments
 | Parameter | Default Value | Meaning |
 |:----------|:--------------|:--------|
+|rabbitmq_cluster_name|rabbit-1-upstream|the name of the cluster to be created |
 |replicas   | 3             | Number of RabbitMQ replicas (pods) to create |
 |requesttimeout | 100s      | Request timeout of a command before it fails |
 |tanzurmqversion| 1.3.0     | The version of Tanzu RabbitMQ to install     |
