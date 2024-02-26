@@ -13,7 +13,6 @@ This will install Tanzu RabbitMQ for Kubernetes on K8S along with pre-requisites
 - *NIX Operating System
 - `kubectl` utility pointing to K8S cluster
 - `wget` OR `curl` utility installed
-- logged in as a root user (or `sudo -i`)
 - Github passwordless SSH key (if with password, you'll be prompted to enter the password)
 
 N.B. Use this at your own risk: no liability is accepted.
