@@ -6,7 +6,7 @@ set -eo pipefail
 tanzurmqversion=1.5.3
 serviceaccount=rabbitmq
 namespace="rabbitmq-system"
-rabbitmnq_cluster_name="rabbit-1-upstream"
+rabbitmq_cluster_name="rabbit-1-upstream"
 install_prerequisites=1
 install_rabbitmq_cluster=1
 replicas=3
@@ -240,7 +240,7 @@ then
      echo "CREATE RABBITMQ CLUSTER"
      ytt -f cluster.yml \
           --data-value-yaml rabbitmq.replicas=$replicas \
-          --data-value-yaml rabbitmq.cluster_name=$rabbitmnq_cluster_name \
+          --data-value-yaml rabbitmq.cluster_name=$rabbitmq_cluster_name \
           --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
           --data-value-yaml rabbitmq.maxskew=$maxskew \
           --data-value-yaml rabbitmq.persistent=$persistent \
