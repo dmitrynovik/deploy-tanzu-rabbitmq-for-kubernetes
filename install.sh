@@ -6,12 +6,15 @@ set -eo pipefail
 tanzurmqversion=1.5.3
 serviceaccount=rabbitmq
 namespace="rabbitmq-system"
+rabbitmnq_cluster_name="rabbit-1"
+install_prerequisites=1
+install_rabbitmq_cluster=1
 replicas=3
 prometheusrepourl="https://github.com/rabbitmq/cluster-operator.git"
 #prometheusoperatorversion=v1.14.0
 requesttimeout=100s
-vmwareuser=""
-vmwarepassword=""
+registryuser=""
+registrypassword=""
 adminpassword=""
 certmanagervsersion=1.13.3
 kubectl=kubectl
@@ -27,12 +30,12 @@ storage="1Gi" # Override in Production (pass parameter)!
 storageclassname="" # Override in Production (pass parameter)!
 max_unavailable=1
 servicetype=LoadBalancer
-install_carvel=1
-install_cert_manager=1
-install_helm=1
-install_prometheus=1
+install_carvel=$install_prerequisites
+install_cert_manager=$install_prerequisites
+install_helm=$install_prerequisites
+install_prometheus=$install_prerequisites
 create_secret=1
-install_package=1
+install_package=$install_prerequisites
 tls_secret=""
 
 enable_amqp_1_0=0
@@ -49,6 +52,7 @@ enable_warm_standby_replication_plugin=0
 
 # cnstatnts:
 RED='\033[0;31m'
+NO_COLOR='\033[0m' # No Color
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -61,22 +65,22 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [ -z $vmwareuser ]
+if [ -z $registryuser ]
 then
-     echo -e "${RED} vmwareuser not set"
+     echo -e "${RED} registryuser not set${NO_COLOR}"
      #exit 1
 fi
 
-if [ -z $vmwarepassword ] 
+if [ -z $registrypassword ] 
 then
-     echo "WARNING: vmwarepassword not set"
+     echo -e "${RED} registrypassword not set${NO_COLOR}"
      #exit 1
 fi
 
 
 if [ -z $adminpassword ] 
 then
-     echo "WARNING: adminpassword not set"
+     echo -e "${RED} adminpassword not set${NO_COLOR}"
      #exit 1
 fi
 
@@ -166,8 +170,8 @@ fi
 if [ $create_secret -gt 0 ]
 then
      echo "CREATING VMWARE CONTAINER REGISTRY SECRET"
-     export RMQ_docker__username="$vmwareuser"
-     export RMQ_docker__password="$vmwarepassword"
+     export RMQ_docker__username="$registryuser"
+     export RMQ_docker__password="$registrypassword"
      export RMQ_docker__server="registry.tanzu.vmware.com"
      export RMQ_rabbitmq__namespace="$namespace"
      ytt -f secret.yml --data-values-env RMQ | $kubectl apply -f-
@@ -229,42 +233,44 @@ else
      echo "Directory cluster-operator exists, skipping..."
 fi
 
-echo "CREATE RABBITMQ CLUSTER"
-ytt -f cluster.yml \
-     --data-value-yaml rabbitmq.replicas=$replicas \
-     --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
-     --data-value-yaml rabbitmq.maxskew=$maxskew \
-     --data-value-yaml rabbitmq.persistent=$persistent \
-     --data-value-yaml rabbitmq.storageclassname=$storageclassname \
-     --data-value-yaml rabbitmq.storage=$storage \
-     --data-value-yaml rabbitmq.cluster_partition_handling=$cluster_partition_handling \
-     --data-value-yaml rabbitmq.vm_memory_high_watermark_paging_ratio=$vm_memory_high_watermark_paging_ratio \
-     --data-value-yaml rabbitmq.disk_free_limit.relative=$disk_free_limit_relative \
-     --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
-     --data-value-yaml rabbitmq.cpu=$cpu \
-     --data-value-yaml rabbitmq.memory=$memory \
-     --data-value-yaml rabbitmq.default_pass=$adminpassword \
-     --data-value-yaml openshift=$openshift \
-     --data-value-yaml servicetype=$servicetype \
-     --data-value-yaml tls_secret=$tls_secret \
-     --data-value-yaml rabbitmq.enable_amqp_1_0=$enable_amqp_1_0 \
-     --data-value-yaml rabbitmq.enable_ldap=$enable_ldap \
-     --data-value-yaml rabbitmq.enable_oauth2=$enable_oauth2 \
-     --data-value-yaml rabbitmq.enable_consistent_hash_exchange=$enable_consistent_hash_exchange \
-     --data-value-yaml rabbitmq.enable_federation=$enable_federation \
-     --data-value-yaml rabbitmq.enable_shovel=$enable_shovel \
-     --data-value-yaml rabbitmq.enable_mqtt=$enable_mqtt \
-     --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
-     --data-value-yaml rabbitmq.enable_stream=$enable_stream \
-     --data-value-yaml rabbitmq.enable_top=$enable_top \
-     --data-value-yaml rabbitmq.enable_warm_standby_replication_plugin=$enable_warm_standby_replication_plugin \
-     | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
+if [ $install_rabbitmq_cluster -gt 0 ]
+     echo "CREATE RABBITMQ CLUSTER"
+     ytt -f cluster.yml \
+          --data-value-yaml rabbitmq.replicas=$replicas \
+          --data-value-yaml rabbitmq.antiaffinity=$antiaffinity \
+          --data-value-yaml rabbitmq.maxskew=$maxskew \
+          --data-value-yaml rabbitmq.persistent=$persistent \
+          --data-value-yaml rabbitmq.storageclassname=$storageclassname \
+          --data-value-yaml rabbitmq.storage=$storage \
+          --data-value-yaml rabbitmq.cluster_partition_handling=$cluster_partition_handling \
+          --data-value-yaml rabbitmq.vm_memory_high_watermark_paging_ratio=$vm_memory_high_watermark_paging_ratio \
+          --data-value-yaml rabbitmq.disk_free_limit.relative=$disk_free_limit_relative \
+          --data-value-yaml rabbitmq.collect_statistics_interval=$collect_statistics_interval \
+          --data-value-yaml rabbitmq.cpu=$cpu \
+          --data-value-yaml rabbitmq.memory=$memory \
+          --data-value-yaml rabbitmq.default_pass=$adminpassword \
+          --data-value-yaml openshift=$openshift \
+          --data-value-yaml servicetype=$servicetype \
+          --data-value-yaml tls_secret=$tls_secret \
+          --data-value-yaml rabbitmq.enable_amqp_1_0=$enable_amqp_1_0 \
+          --data-value-yaml rabbitmq.enable_ldap=$enable_ldap \
+          --data-value-yaml rabbitmq.enable_oauth2=$enable_oauth2 \
+          --data-value-yaml rabbitmq.enable_consistent_hash_exchange=$enable_consistent_hash_exchange \
+          --data-value-yaml rabbitmq.enable_federation=$enable_federation \
+          --data-value-yaml rabbitmq.enable_shovel=$enable_shovel \
+          --data-value-yaml rabbitmq.enable_mqtt=$enable_mqtt \
+          --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
+          --data-value-yaml rabbitmq.enable_stream=$enable_stream \
+          --data-value-yaml rabbitmq.enable_top=$enable_top \
+          --data-value-yaml rabbitmq.enable_warm_standby_replication_plugin=$enable_warm_standby_replication_plugin \
+          | kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
-if [ $max_unavailable -gt 0 ] 
-then
-     echo "APPLYING the POD DISRUPTION BUDGET"
-     ytt -f pod_disruption_budget.yml --data-value-yaml rabbitmq.max_unavailable=$max_unavailable \
-     | kubectl apply -n $namespace --request-timeout=$requesttimeout -f-
+     if [ $max_unavailable -gt 0 ] 
+     then
+          echo "APPLYING the POD DISRUPTION BUDGET"
+          ytt -f pod_disruption_budget.yml --data-value-yaml rabbitmq.max_unavailable=$max_unavailable \
+          | kubectl apply -n $namespace --request-timeout=$requesttimeout -f-
+     fi
 fi
 
 
