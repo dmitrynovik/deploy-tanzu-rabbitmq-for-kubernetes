@@ -47,6 +47,8 @@ enable_stream=1
 enable_top=1
 enable_warm_standby_replication_plugin=0
 
+# cnstatnts:
+RED='\033[0;31m'
 
 # Override parameters (if specified) e.g. --tanzurmqversion 1.2.2
 while [ $# -gt 0 ]; do
@@ -61,21 +63,21 @@ done
 
 if [ -z $vmwareuser ]
 then
-     echo "vmwareuser not set"
-     exit 1
+     echo -e "${RED} vmwareuser not set"
+     #exit 1
 fi
 
 if [ -z $vmwarepassword ] 
 then
-     echo "vmwarepassword not set"
-     exit 1
+     echo "WARNING: vmwarepassword not set"
+     #exit 1
 fi
 
 
 if [ -z $adminpassword ] 
 then
-     echo "adminpassword not set"
-     exit 1
+     echo "WARNING: adminpassword not set"
+     #exit 1
 fi
 
 if [ -z $storageclassname ]; then persistent=0; else persistent=1; fi
