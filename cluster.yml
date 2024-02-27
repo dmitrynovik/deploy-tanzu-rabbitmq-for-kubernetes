@@ -46,7 +46,7 @@ spec:
       - rabbitmq_stomp
       - rabbitmq_web_stomp
   #@ end
-  #@ if data.values.rabbitmq.enable_warm_standby_replication_plugin == 1:
+  #@ if data.values.rabbitmq.enable_warm_standby_replication == 1:
       - rabbitmq_schema_definition_sync
       - rabbitmq_schema_definition_sync_prometheus
       - rabbitmq_standby_replication

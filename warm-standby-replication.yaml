@@ -1,0 +1,14 @@
+#@ load("@ytt:data", "data")
+
+#@ secret_name = "{}-secret".format(data.values.rabbitmq.cluster_name)
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: #@ secret_name
+  namespace: #@ data.values.rabbitmq.namespace
+type: Opaque
+stringData:
+  username: replicator
+  password: #@ data.values.rabbitmq.replicator_password
+---

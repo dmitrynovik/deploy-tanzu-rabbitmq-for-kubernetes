@@ -5,10 +5,12 @@ set -eo pipefail
 # Parameters with default values (can override):
 tanzurmqversion=1.5.3
 serviceaccount=rabbitmq
-namespace="rabbitmq-system"
-rabbitmq_cluster_name="rabbit-1-upstream"
+namespace="rabbitmq-system-upstream"
+rabbitmq_cluster_name="rabbit-1"
+
 install_prerequisites=1
 install_rabbitmq_cluster=1
+
 replicas=3
 prometheusrepourl="https://github.com/rabbitmq/cluster-operator.git"
 #prometheusoperatorversion=v1.14.0
@@ -48,7 +50,10 @@ enable_mqtt=0
 enable_stomp=0
 enable_stream=1
 enable_top=1
-enable_warm_standby_replication_plugin=0
+
+enable_warm_standby_replication=1
+replication_mode=upstream
+replicator_password="Lowerc@ase1"
 
 # cnstatnts:
 RED='\033[0;31m'
@@ -266,7 +271,7 @@ then
           --data-value-yaml rabbitmq.enable_stomp=$enable_stomp \
           --data-value-yaml rabbitmq.enable_stream=$enable_stream \
           --data-value-yaml rabbitmq.enable_top=$enable_top \
-          --data-value-yaml rabbitmq.enable_warm_standby_replication_plugin=$enable_warm_standby_replication_plugin \
+          --data-value-yaml rabbitmq.enable_warm_standby_replication=$enable_warm_standby_replication \
           | sudo kapp deploy --debug -a tanzu-rabbitmq-cluster -y -n $namespace -f-
 
      if [ $max_unavailable -gt 0 ] 
